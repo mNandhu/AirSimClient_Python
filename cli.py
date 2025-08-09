@@ -5,14 +5,14 @@ import os
 import runpy
 from pathlib import Path
 import time
-from typing import Optional
+from typing import Optional, Any
 import ast
 
 import typer
 from rich import print as rprint
 from rich.table import Table
 from dotenv import load_dotenv
-import airsim
+import warnings
 
 
 APP_NAME = "airsim-cli"
@@ -134,6 +134,19 @@ def extract_example_description(path: Path) -> tuple[str, str]:
     first_line = long_desc.splitlines()[0]
     short = first_line.split(". ")[0].strip()
     return (short, long_desc)
+
+
+def _import_airsim() -> Any:
+    """Import airsim while suppressing noisy tornado SyntaxWarning."""
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            category=SyntaxWarning,
+            module=r"^tornado\.util$",
+        )
+        import airsim as _airsim  # type: ignore
+
+    return _airsim
 
 
 @app.command("examples")
@@ -306,6 +319,7 @@ def capture_images(
     """Capture scene images from a camera and save PNGs."""
     load_env()
     out_dir.mkdir(parents=True, exist_ok=True)
+    airsim = _import_airsim()
     client = airsim.CarClient()
     client.confirmConnection()
     vname = car_name or os.getenv("CAR_NAME", "Car1")
@@ -345,6 +359,7 @@ def lidar_dump(
     """Grab a single lidar scan and dump to CSV."""
     load_env()
     out_file.parent.mkdir(parents=True, exist_ok=True)
+    airsim = _import_airsim()
     client = airsim.CarClient()
     client.confirmConnection()
     vname = car_name or os.getenv("CAR_NAME", "Car1")
@@ -367,8 +382,17 @@ def lidar_dump(
     rprint(f"[green]Wrote {out_file} ({len(pts) // 3} points)")
 
 
+def suppress_tornado_syntax_warning():
+    """Globally suppress known tornado SyntaxWarning."""
+    warnings.filterwarnings(
+        "ignore",
+        category=SyntaxWarning,
+        module=r"^tornado\.util$",
+    )
+
 def main():  # console_script entry point
     load_env()
+    suppress_tornado_syntax_warning()
     app()
 
 
