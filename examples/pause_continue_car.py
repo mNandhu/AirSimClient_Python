@@ -1,4 +1,6 @@
-import setup_path 
+"""Pause/continue demo: run for 5s, pause for 5s, continue for 10s, then finish the cycle."""
+
+# import setup_path
 import airsim
 
 import time
@@ -15,10 +17,10 @@ for i in range(1, 6):
     car_controls.throttle = 0.5
     car_controls.steering = 1
     client.setCarControls(car_controls)
-    time.sleep(5) #run
+    time.sleep(5)  # run
     print("Pausing after 5sec")
     client.simPause(True)
-    time.sleep(5) #paused
+    time.sleep(5)  # paused
     print("Restarting command to run for 10sec")
     client.simContinueForTime(10)
     time.sleep(20)
@@ -26,7 +28,3 @@ for i in range(1, 6):
     client.simPause(False)
     time.sleep(10)
     print("Finished cycle")
-
-
-    
-    

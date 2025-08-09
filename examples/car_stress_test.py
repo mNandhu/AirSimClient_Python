@@ -1,3 +1,6 @@
+"""Stress test: repeatedly issue drive patterns (forward, steer, reverse, brake),
+reset to original state, and repeat many iterations."""
+
 # import setup_path
 import airsim
 

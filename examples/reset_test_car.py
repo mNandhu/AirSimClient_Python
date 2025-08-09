@@ -1,9 +1,11 @@
-# import setup_path 
+"""Reset test: drive forward and steer, reset the simulation, then drive again to verify reset."""
+
+# import setup_path
 import airsim
 
 import time
 
-# connect to the AirSim simulator 
+# connect to the AirSim simulator
 client = airsim.CarClient()
 client.confirmConnection()
 client.enableApiControl(True)
@@ -15,14 +17,12 @@ car_controls.throttle = 1
 car_controls.steering = 1
 client.setCarControls(car_controls)
 print("Go Forward")
-time.sleep(5)   # let car drive a bit
+time.sleep(5)  # let car drive a bit
 
 print("reset")
 client.reset()
-time.sleep(5)   # let car drive a bit
+time.sleep(5)  # let car drive a bit
 
 client.setCarControls(car_controls)
 print("Go Forward")
-time.sleep(5)   # let car drive a bit
-
-
+time.sleep(5)  # let car drive a bit
