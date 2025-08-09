@@ -1,0 +1,100 @@
+{
+  "SeeDocsAt": "https://microsoft.github.io/AirSim/settings/",
+  "SettingsVersion": 1.2,
+  "SimMode": "Car",
+  "Vehicles": {
+    "Car1": {
+      "VehicleType": "PhysXCar",
+      "AutoCreate": true,
+      "Sensors": {
+        "Lidar360": {
+          "SensorType": 6,
+          "Enabled": true,
+          "NumberOfChannels": 16,
+          "Range": 100,
+          "PointsPerSecond": 200000,
+          "RotationsPerSecond": 10,
+          "HorizontalFOVStart": 0,
+          "HorizontalFOVEnd": 359,
+          "VerticalFOVUpper": 10,
+          "VerticalFOVLower": -10,
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 1.2,
+          "Roll": 0,
+          "Pitch": 0,
+          "Yaw": 0,
+          "DrawDebugPoints": false,
+          "DataFrame": "SensorLocalFrame",
+          "ExternalController": true
+        }
+      },
+      "Cameras": {
+        "Front": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 1.2,
+          "Pitch": 0,
+          "Roll": 0,
+          "Yaw": 0,
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 1920,
+              "Height": 1080,
+              "FOV_Degrees": 90
+            }
+          ]
+        },
+        "Right": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 1.2,
+          "Pitch": 0,
+          "Roll": 0,
+          "Yaw": 90,
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 1920,
+              "Height": 1080,
+              "FOV_Degrees": 90
+            }
+          ]
+        },
+        "Back": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 1.2,
+          "Pitch": 0,
+          "Roll": 0,
+          "Yaw": 180,
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 1920,
+              "Height": 1080,
+              "FOV_Degrees": 90
+            }
+          ]
+        },
+        "Left": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 1.2,
+          "Pitch": 0,
+          "Roll": 0,
+          "Yaw": -90,
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 1920,
+              "Height": 1080,
+              "FOV_Degrees": 90
+            }
+          ]
+        }
+      }
+    }
+  }
+}
