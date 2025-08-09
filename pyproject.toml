@@ -1,0 +1,17 @@
+[project]
+name = "airsimclient-python"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "airsim>=1.8.1",
+    "backports-ssl-match-hostname>=3.7.0.1",
+    "msgpack-rpc-python>=0.4.1",
+    "numpy>=2.3.2",
+    "opencv-python>=4.11.0.86",
+    "python-dotenv>=1.1.1",
+    "setuptools>=80.9.0",
+    "tornado<5",
+    "wheel>=0.45.1",
+]
