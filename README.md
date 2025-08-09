@@ -8,7 +8,7 @@ This project provides a Typer-based CLI to run AirSim car examples, tweak `setti
 
    - Sync the environment
 
-   ```powershell
+   ```bash
    uv sync
    ```
 
@@ -16,35 +16,49 @@ This project provides a Typer-based CLI to run AirSim car examples, tweak `setti
 
 3. List available examples:
 
-   ```powershell
-   uv run airsim-cli examples
+   ```bash
+   airsim-cli examples
    ```
 
 4. Run an example (e.g., `hello_car`) and yield control after:
 
-   ```powershell
-   uv run airsim-cli run hello_car --yield-control
+   ```bash
+   airsim-cli run hello_car --yield-control
    ```
 
 5. View or update `settings.json`:
 
    - Show current settings
 
-   ```powershell
-   uv run airsim-cli settings --show
+   ```bash
+   airsim-cli settings --show
    ```
 
    - Enable lidar and change points per second, then save
 
-   ```powershell
-   uv run airsim-cli settings --vehicle Car1 --enable-lidar --lidar-pps 200000 --save
+   ```bash
+   airsim-cli settings --vehicle Car1 --enable-lidar --lidar-pps 200000 --save
    ```
+
+### Install the CLI into your active environment
+
+If you want to use `airsim-cli` without `uv run`, install it to your active Python environment:
+
+```bash
+uv pip install -e .
+```
+
+Then run it directly:
+
+```bash
+airsim-cli --help
+```
 
 ## .env configuration
 
 Create a `.env` file to configure defaults:
 
-```
+```text
 CAR_NAME=Car1
 AIRSIM_HOST=127.0.0.1
 AIRSIM_PORT=41451
@@ -58,13 +72,13 @@ Use `uv` to manage dependencies:
 
 - Add a package:
 
-  ```powershell
+  ```bash
   uv add <package>
   ```
 
 - Remove a package:
 
-  ```powershell
+  ```bash
   uv remove <package>
   ```
 
@@ -79,12 +93,12 @@ Use `uv` to manage dependencies:
 
 - Capture images from a camera and save PNGs:
 
-  ```powershell
-  uv run airsim-cli capture-images --camera Front --count 20 --interval 0.25 --out-dir data/images
+  ```bash
+  airsim-cli capture-images --camera Front --count 20 --interval 0.25 --out-dir data/images
   ```
 
 - Dump a single lidar scan to CSV:
 
-  ```powershell
-  uv run airsim-cli lidar-dump --sensor-name Lidar360 --out-file data/lidar/points.csv
+  ```bash
+  airsim-cli lidar-dump --sensor-name Lidar360 --out-file data/lidar/points.csv
   ```
