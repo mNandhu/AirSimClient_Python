@@ -6,6 +6,7 @@ import runpy
 from pathlib import Path
 import time
 from typing import Optional, Any
+import sys
 import ast
 
 import typer
@@ -46,10 +47,13 @@ def run_script(path: Path, env_overrides: dict[str, str] | None = None) -> int:
     """Run a Python script in-process using runpy, with optional environment overrides."""
     env_overrides = env_overrides or {}
     prev_env = {}
+    prev_argv = sys.argv[:]
     try:
         for k, v in env_overrides.items():
             prev_env[k] = os.environ.get(k)
             os.environ[k] = str(v)
+        # Ensure the script sees only its own program name and no CLI args like 'run <name>'
+        sys.argv = [str(path)]
         runpy.run_path(str(path), run_name="__main__")
         return 0
     except SystemExit as e:
@@ -64,6 +68,7 @@ def run_script(path: Path, env_overrides: dict[str, str] | None = None) -> int:
                 os.environ.pop(k, None)
             else:
                 os.environ[k] = v
+        sys.argv = prev_argv
 
 
 def read_settings() -> dict:
@@ -389,6 +394,7 @@ def suppress_tornado_syntax_warning():
         category=SyntaxWarning,
         module=r"^tornado\.util$",
     )
+
 
 def main():  # console_script entry point
     load_env()
