@@ -11,11 +11,13 @@ dependencies = [
     "numpy>=2.3.2",
     "open3d>=0.19.0",
     "opencv-python>=4.11.0.86",
+    "matplotlib>=3.9.0",
     "python-dotenv>=1.1.1",
     "rich>=14.1.0",
     "setuptools>=80.9.0",
     "tornado<5",
     "typer>=0.16.0",
+    "ultralytics>=8.3.0",
     "wheel>=0.45.1",
 ]
 

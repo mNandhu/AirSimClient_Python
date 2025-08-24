@@ -12,3 +12,6 @@ wheels/
 # IDE
 .idea/
 .vscode/
+
+# Yolo models
+yolo*.pt
