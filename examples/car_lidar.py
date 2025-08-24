@@ -5,6 +5,7 @@
 import airsim
 
 import sys
+import os
 
 # import math
 import time
@@ -15,12 +16,13 @@ import numpy
 
 # Makes the drone fly and get Lidar data
 class LidarTest:
-    def __init__(self):
+    def __init__(self, save_to_disk=True):
         # connect to the AirSim simulator
         self.client = airsim.CarClient()
         self.client.confirmConnection()
         self.client.enableApiControl(True)
         self.car_controls = airsim.CarControls()
+        self.save_to_disk = save_to_disk
 
     def execute(self):
         for i in range(3):
@@ -66,6 +68,8 @@ class LidarTest:
                         "\t\tlidar orientation: %s"
                         % (pprint.pformat(lidarData.pose.orientation))
                     )
+                    if self.save_to_disk:
+                        self.write_lidarData_to_disk(points, lidarData.time_stamp)
                 time.sleep(5)
 
     def parse_lidarData(self, data):
@@ -75,9 +79,14 @@ class LidarTest:
 
         return points
 
-    def write_lidarData_to_disk(self, points):
-        # TODO
-        print("not yet implemented")
+    def write_lidarData_to_disk(self, points, time_stamp):
+        output_dir = "lidar_data"
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        file_name = os.path.join(output_dir, f"lidar_{time_stamp}.csv")
+        numpy.savetxt(file_name, points, delimiter=",", header="x,y,z", comments="")
+        print(f"\tLidar data saved to {file_name}")
 
     def stop(self):
         airsim.wait_key("Press any key to reset to original state")
@@ -96,11 +105,11 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser("Lidar.py makes car move and gets Lidar data")
 
     arg_parser.add_argument(
-        "-save-to-disk", type=bool, help="save Lidar data to disk", default=False
+        "--save-to-disk", action="store_true", help="save Lidar data to disk", default=True
     )
 
     args = arg_parser.parse_args(args)
-    lidarTest = LidarTest()
+    lidarTest = LidarTest(save_to_disk=args.save_to_disk)
     try:
         lidarTest.execute()
     finally:
