@@ -19,6 +19,7 @@ dependencies = [
     "typer>=0.16.0",
     "ultralytics>=8.3.0",
     "wheel>=0.45.1",
+    "stable-baselines3[extra]>=2.7.0",
 ]
 
 [project.scripts]
