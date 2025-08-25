@@ -4,7 +4,6 @@ import numpy as np
 import math
 import time
 
-import gymnasium as gym
 from gymnasium import spaces
 from airgym.envs.airsim_env import AirSimEnv
 
@@ -41,7 +40,11 @@ class AirSimCarEnv(AirSimEnv):
         time.sleep(0.01)
 
     def __del__(self):
-        self.car.reset()
+        # Guard against teardown errors when socket/session already closed
+        try:
+            self.car.reset()
+        except Exception:
+            pass
 
     def _do_action(self, action):
         self.car_controls.brake = 0
@@ -65,8 +68,10 @@ class AirSimCarEnv(AirSimEnv):
         time.sleep(1)
 
     def transform_obs(self, response):
-        img1d = np.array(response.image_data_float, dtype=np.float)
-        img1d = 255 / np.maximum(np.ones(img1d.size), img1d)
+        # DepthPerspective returns floats; avoid deprecated np.float
+        img1d = np.array(response.image_data_float, dtype=np.float32)
+        # Prevent divide-by-zero and excessive values
+        img1d = 255.0 / np.maximum(np.ones(img1d.size, dtype=np.float32), img1d)
         img2d = np.reshape(img1d, (response.height, response.width))
 
         from PIL import Image
@@ -97,38 +102,43 @@ class AirSimCarEnv(AirSimEnv):
         pts = [
             np.array([x, y, 0])
             for x, y in [
-                (0, -1), (130, -1), (130, 125), (0, 125),
-                (0, -1), (130, -1), (130, -128), (0, -128),
+                (0, -1),
+                (130, -1),
+                (130, 125),
+                (0, 125),
+                (0, -1),
+                (130, -1),
+                (130, -128),
+                (0, -128),
                 (0, -1),
             ]
         ]
         car_pt = self.state["pose"].position.to_numpy_array()
 
-        dist = 10000000
+        dists = []
         for i in range(0, len(pts) - 1):
-            dist = min(
-                dist,
-                np.linalg.norm(
-                    np.cross((car_pt - pts[i]), (car_pt - pts[i + 1]))
-                )
-                / np.linalg.norm(pts[i] - pts[i + 1]),
+            numerator = np.linalg.norm(
+                np.cross((car_pt - pts[i]), (car_pt - pts[i + 1]))
             )
+            denom = np.linalg.norm(pts[i] - pts[i + 1]) + 1e-9
+            dists.append(float(numerator / denom))
+        dist = min(dists) if dists else float("inf")
 
         # print(dist)
         if dist > THRESH_DIST:
             reward = -3
         else:
             reward_dist = math.exp(-BETA * dist) - 0.5
-            reward_speed = (
-                (self.car_state.speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)
-            ) - 0.5
+            speed_val = float(getattr(self.car_state, "speed", 0.0) or 0.0)
+            reward_speed = ((speed_val - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)) - 0.5
             reward = reward_dist + reward_speed
 
         done = 0
         if reward < -1:
             done = 1
         if self.car_controls.brake == 0:
-            if self.car_state.speed <= 1:
+            speed_val = float(getattr(self.car_state, "speed", 0.0) or 0.0)
+            if speed_val <= 1:
                 done = 1
         if self.state["collision"]:
             done = 1
@@ -142,7 +152,9 @@ class AirSimCarEnv(AirSimEnv):
 
         return obs, reward, done, self.state
 
-    def reset(self):
+    def reset(self, *, seed=None, options=None):
+        # Gymnasium-compatible signature: return (obs, info)
         self._setup_car()
         self._do_action(1)
-        return self._get_obs()
+        obs = self._get_obs()
+        return obs, {}
